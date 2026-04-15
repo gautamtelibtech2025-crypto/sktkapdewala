@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop – Sktkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">Skt<span>Kapdewala</span></a>
+    <div class="nav-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search products..." />
+    </div>
+    <div class="nav-actions">
+      <div class="store-switch" id="storeSwitchNav">
+        <button class="store-btn" data-store="SktUdaipur">Udaipur</button>
+        <button class="store-btn" data-store="SktBinder">Binder</button>
+        <button class="store-btn" data-store="SktCommerce">All</button>
+      </div>
+      <a href="/pages/cart.html" class="nav-icon-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+      <div id="navAuthArea">
+        <button class="nav-user-btn" onclick="window.location='/'">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container section">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Shop</span>
+  </div>
+
+  <div class="page-layout">
+    <!-- Filters -->
+    <aside class="filters-sidebar">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Filters</div>
+
+      <div class="filter-group">
+        <div class="filter-label">Store</div>
+        <div class="filter-options">
+          <label class="filter-option"><input type="radio" name="store" value="" checked onchange="applyFilters()" /> All Stores</label>
+          <label class="filter-option"><input type="radio" name="store" value="sktudaipur" onchange="applyFilters()" /> SKT Udaipur</label>
+          <label class="filter-option"><input type="radio" name="store" value="sktbinder" onchange="applyFilters()" /> SKT Binder</label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">Category</div>
+        <div class="filter-options">
+          <label class="filter-option"><input type="radio" name="category" value="" checked onchange="applyFilters()" /> All Categories</label>
+          <label class="filter-option"><input type="radio" name="category" value="shirts" onchange="applyFilters()" /> Shirts</label>
+          <label class="filter-option"><input type="radio" name="category" value="jeans" onchange="applyFilters()" /> Jeans</label>
+          <label class="filter-option"><input type="radio" name="category" value="pants" onchange="applyFilters()" /> Pants</label>
+          <label class="filter-option"><input type="radio" name="category" value="tshirts" onchange="applyFilters()" /> T-Shirts</label>
+          <label class="filter-option"><input type="radio" name="category" value="lowers" onchange="applyFilters()" /> Lowers</label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">Price Range</div>
+        <div class="price-range">
+          <input type="number" id="minPrice" placeholder="Min ₹" oninput="applyFilters()" />
+          <input type="number" id="maxPrice" placeholder="Max ₹" oninput="applyFilters()" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">Sort By</div>
+        <select class="form-input" id="sortBy" onchange="applyFilters()" style="padding:10px 12px">
+          <option value="created_at|DESC">Newest First</option>
+          <option value="created_at|ASC">Oldest First</option>
+          <option value="base_price|ASC">Price: Low to High</option>
+          <option value="base_price|DESC">Price: High to Low</option>
+          <option value="name|ASC">Name A-Z</option>
+        </select>
+      </div>
+
+      <button class="btn btn-ghost btn-full btn-sm" onclick="clearFilters()">Clear Filters</button>
+    </aside>
+
+    <!-- Products Area -->
+    <div class="products-area">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div>
+          <h1 class="heading-md" id="pageTitle">All Products</h1>
+          <p class="text-muted text-small" id="productCount">Loading...</p>
+        </div>
+      </div>
+
+      <div class="product-grid" id="productsGrid">
+        <div class="page-loader" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../js/api.js"></script>
+<script>
+let currentPage = 1;
+
+// Init from URL params
+const urlParams = new URLSearchParams(window.location.search);
+const urlCat = urlParams.get('cat') || urlParams.get('category') || '';
+const urlSearch = urlParams.get('search') || '';
+
+if (urlCat) {
+  const radios = document.querySelectorAll('input[name="category"]');
+  radios.forEach(r => { if (r.value === urlCat) r.checked = true; });
+}
+if (urlSearch) {
+  document.getElementById('searchInput').value = urlSearch;
+}
+
+// Store switch
+document.querySelectorAll('.store-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.store === State.storeMode);
+  btn.addEventListener('click', () => {
+    State.setStore(btn.dataset.store);
+    document.querySelectorAll('.store-btn').forEach(b => b.classList.toggle('active', b.dataset.store === btn.dataset.store));
+    const storeSlug = btn.dataset.store === 'SktUdaipur' ? 'sktudaipur' : btn.dataset.store === 'SktBinder' ? 'sktbinder' : '';
+    document.querySelector(`input[name="store"][value="${storeSlug}"]`).checked = true;
+    loadProducts(1);
+  });
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 400));
+
+function debounce(fn, delay) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+}
+
+function getFilters() {
+  const store = document.querySelector('input[name="store"]:checked')?.value || '';
+  const category = document.querySelector('input[name="category"]:checked')?.value || '';
+  const minPrice = document.getElementById('minPrice').value;
+  const maxPrice = document.getElementById('maxPrice').value;
+  const search = document.getElementById('searchInput').value.trim();
+  const sortVal = document.getElementById('sortBy').value.split('|');
+
+  return { store, category, minPrice, maxPrice, search, sortBy: sortVal[0], order: sortVal[1] };
+}
+
+function applyFilters() { loadProducts(1); }
+
+function clearFilters() {
+  document.querySelectorAll('input[name="store"]')[0].checked = true;
+  document.querySelectorAll('input[name="category"]')[0].checked = true;
+  document.getElementById('minPrice').value = '';
+  document.getElementById('maxPrice').value = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('sortBy').value = 'created_at|DESC';
+  loadProducts(1);
+}
+
+function renderProductCard(p) {
+  const img = p.images?.[0] || '/assets/product-placeholder.svg';
+  const price = p.sale_price || p.base_price;
+  const original = p.sale_price ? p.base_price : null;
+  const discount = original ? Math.round((1 - price/original) * 100) : 0;
+  const stores = p.inventory || [];
+
+  return `
+    <div class="product-card" onclick="window.location='/pages/product.html?id=${p.id}'">
+      <div class="product-img-wrap">
+        <img src="${img}" alt="${p.name}" loading="lazy" onerror="this.src='/assets/product-placeholder.svg'" />
+        ${discount > 0 ? `<span class="product-badge sale">${discount}% OFF</span>` : '<span class="product-badge">New</span>'}
+        <div class="product-quick-add">
+          <button class="btn btn-primary btn-sm btn-full" onclick="quickAdd(event,'${p.id}','${stores[0]?.store_id||''}')">Quick Add</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-store">${p.category_name || ''}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">
+          <span class="price-current">${formatCurrency(price)}</span>
+          ${original ? `<span class="price-original">${formatCurrency(original)}</span>` : ''}
+          ${discount > 0 ? `<span class="price-discount">-${discount}%</span>` : ''}
+        </div>
+        <div class="product-availability">
+          ${stores.map(s => `<span class="store-tag ${s.stock > 0 ? 'in-stock' : 'out-stock'}">${s.store_name}: ${s.stock > 0 ? s.stock + ' left' : 'OOS'}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadProducts(page = 1) {
+  currentPage = page;
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = `<div class="page-loader" style="grid-column:1/-1"><div class="spinner"></div></div>`;
+
+  const f = getFilters();
+  const params = { page, limit: 12, ...(f.store && { store: f.store }), ...(f.category && { category: f.category }), ...(f.minPrice && { minPrice: f.minPrice }), ...(f.maxPrice && { maxPrice: f.maxPrice }), ...(f.search && { search: f.search }), sortBy: f.sortBy, order: f.order };
+
+  try {
+    const data = await API.products.list(params);
+    const products = data.data?.products || [];
+    const pagination = data.data?.pagination || {};
+
+    const catName = f.category ? f.category.charAt(0).toUpperCase() + f.category.slice(1) : 'All';
+    document.getElementById('pageTitle').textContent = f.search ? `Results for "${f.search}"` : catName + ' Products';
+    document.getElementById('productCount').textContent = `${pagination.total || products.length} products found`;
+
+    if (!products.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">No products found</div><p>Try adjusting your filters</p></div>`;
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    grid.innerHTML = products.map(renderProductCard).join('');
+    renderPagination(pagination);
+  } catch (err) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⚠️</div><div class="empty-title">Error loading products</div><p>${err.message}</p></div>`;
+  }
+}
+
+function renderPagination(p) {
+  const container = document.getElementById('pagination');
+  if (p.pages <= 1) { container.innerHTML = ''; return; }
+  let html = '';
+  for (let i = 1; i <= p.pages; i++) {
+    html += `<button class="page-btn ${i === p.page ? 'active' : ''}" onclick="loadProducts(${i})">${i}</button>`;
+  }
+  container.innerHTML = html;
+}
+
+async function quickAdd(e, productId, storeId) {
+  e.stopPropagation();
+  if (!storeId) { Toast.error('Select a store first'); return; }
+  try {
+    await API.cart.add({ product_id: productId, store_id: storeId, quantity: 1 });
+    Toast.success('Added to cart!');
+    updateCartCount();
+  } catch (err) { Toast.error(err.message); }
+}
+
+// Update nav auth
+if (State.user) {
+  document.getElementById('navAuthArea').innerHTML = `<span style="font-size:0.85rem;font-weight:500">${State.user.name}</span>`;
+}
+
+// Scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+updateCartCount();
+loadProducts(1);
+</script>
+</body>
+</html>

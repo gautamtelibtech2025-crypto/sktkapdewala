@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout – Sktkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">Skt<span>Kapdewala</span></a>
+  </div>
+</nav>
+
+<div class="container section">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="breadcrumb-sep">›</span>
+    <a href="/pages/cart.html">Cart</a><span class="breadcrumb-sep">›</span>
+    <span>Checkout</span>
+  </div>
+
+  <h1 class="heading-lg" style="margin-bottom:32px">Checkout</h1>
+
+  <div class="checkout-layout">
+    <!-- Form -->
+    <div>
+      <div class="checkout-form" style="margin-bottom:24px">
+        <h3 class="heading-sm" style="margin-bottom:20px">Shipping Details</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-input" id="shipName" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input type="tel" class="form-input" id="shipPhone" placeholder="+91 98765 43210" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address *</label>
+          <textarea class="form-input" id="shipAddress" rows="3" placeholder="House no., Street, Landmark"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input type="text" class="form-input" id="shipCity" placeholder="City" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">PIN Code *</label>
+            <input type="text" class="form-input" id="shipPin" placeholder="313001" maxlength="6" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <input type="text" class="form-input" id="shipState" placeholder="Rajasthan" value="Rajasthan" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Order Notes (optional)</label>
+          <textarea class="form-input" id="orderNotes" rows="2" placeholder="Any special instructions..."></textarea>
+        </div>
+      </div>
+
+      <div class="checkout-form">
+        <h3 class="heading-sm" style="margin-bottom:20px">Payment Method</h3>
+        <div class="payment-options">
+          <div class="payment-opt selected" id="onlinePayOpt" onclick="selectPayment('online')">
+            <div class="payment-opt-icon">💳</div>
+            <div class="payment-opt-label">Online Payment</div>
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px">UPI, Cards, NetBanking</div>
+          </div>
+          <div class="payment-opt" id="storePayOpt" onclick="selectPayment('pay_at_store')">
+            <div class="payment-opt-icon">🏬</div>
+            <div class="payment-opt-label">Pay at Store</div>
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px">Cash / QR at counter</div>
+          </div>
+        </div>
+
+        <div id="razorpayInfo" style="margin-top:20px;padding:16px;background:var(--gray-50);border-radius:var(--radius);font-size:0.85rem;color:var(--gray-600)">
+          <strong>🔐 Secure Payment via Razorpay</strong><br>
+          Your payment is secured with industry-standard encryption.
+        </div>
+        <div id="storeInfo" style="display:none;margin-top:20px;padding:16px;background:#fef3c7;border-radius:var(--radius);font-size:0.85rem">
+          <strong>🏬 Pay at Store</strong><br>
+          Your order will be reserved. Please pay when you visit the store.
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div>
+      <div class="cart-summary" id="checkoutSummary">
+        <h3 class="heading-sm" style="margin-bottom:20px">Order Summary</h3>
+        <div id="summaryItems"><div class="spinner" style="margin:0 auto"></div></div>
+        <button class="btn btn-primary btn-full btn-lg" style="margin-top:20px" onclick="placeOrder()" id="placeOrderBtn">
+          Place Order
+        </button>
+        <p style="font-size:0.75rem;color:var(--gray-400);text-align:center;margin-top:12px">By placing this order, you agree to our Terms of Service</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="../js/api.js"></script>
+<script>
+let paymentMethod = 'online';
+let cartData = null;
+
+function selectPayment(method) {
+  paymentMethod = method;
+  document.getElementById('onlinePayOpt').classList.toggle('selected', method === 'online');
+  document.getElementById('storePayOpt').classList.toggle('selected', method === 'pay_at_store');
+  document.getElementById('razorpayInfo').style.display = method === 'online' ? '' : 'none';
+  document.getElementById('storeInfo').style.display = method === 'pay_at_store' ? '' : 'none';
+}
+
+async function loadSummary() {
+  try {
+    const data = await API.cart.get();
+    cartData = data.data?.cart;
+    const items = cartData?.items || [];
+
+    if (!items.length) {
+      window.location.href = '/pages/cart.html';
+      return;
+    }
+
+    // Pre-fill user info
+    if (State.user) {
+      document.getElementById('shipName').value = State.user.name || '';
+      document.getElementById('shipPhone').value = State.user.phone || '';
+    }
+
+    const byStore = {};
+    items.forEach(item => {
+      const sn = item.store_name;
+      if (!byStore[sn]) byStore[sn] = { items: [], total: 0 };
+      byStore[sn].items.push(item);
+      byStore[sn].total += item.price_at_add * item.quantity;
+    });
+
+    const subtotal = items.reduce((s, i) => s + i.price_at_add * i.quantity, 0);
+
+    document.getElementById('summaryItems').innerHTML = `
+      ${Object.entries(byStore).map(([store, d]) => `
+        <div style="margin-bottom:16px">
+          <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--gray-500);margin-bottom:8px">🏬 ${store}</div>
+          ${d.items.map(i => `
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;padding:4px 0">
+              <span>${i.product_name} × ${i.quantity}</span>
+              <span style="font-weight:500">${formatCurrency(i.price_at_add * i.quantity)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+      <div style="border-top:1px solid var(--gray-200);margin-top:12px;padding-top:12px">
+        <div class="summary-row"><span>Subtotal</span><span>${formatCurrency(subtotal)}</span></div>
+        <div class="summary-row"><span>Shipping</span><span style="color:var(--success)">Free</span></div>
+        <div class="summary-row total"><span>Total</span><span>${formatCurrency(subtotal)}</span></div>
+      </div>
+    `;
+  } catch (err) {
+    Toast.error('Failed to load cart: ' + err.message);
+  }
+}
+
+async function placeOrder() {
+  const name = document.getElementById('shipName').value.trim();
+  const phone = document.getElementById('shipPhone').value.trim();
+  const address = document.getElementById('shipAddress').value.trim();
+  const city = document.getElementById('shipCity').value.trim();
+  const pin = document.getElementById('shipPin').value.trim();
+
+  if (!name || !phone || !address || !city || !pin) {
+    Toast.error('Please fill all required fields');
+    return;
+  }
+
+  const shippingAddress = {
+    name, phone, address, city, pin,
+    state: document.getElementById('shipState').value.trim() || 'Rajasthan'
+  };
+
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
+
+  try {
+    const orderData = {
+      payment_method: paymentMethod,
+      shipping_address: shippingAddress,
+      notes: document.getElementById('orderNotes').value.trim()
+    };
+
+    const res = await API.orders.create(orderData);
+    const order = res.data.order;
+
+    if (paymentMethod === 'online') {
+      // Razorpay integration
+      const subtotal = cartData.items.reduce((s, i) => s + i.price_at_add * i.quantity, 0);
+      const options = {
+        key: 'rzp_test_your_key_here', // Replace with actual key
+        amount: Math.round(subtotal * 100),
+        currency: 'INR',
+        name: 'Sktkapdewala',
+        description: `Order ${order.order_number}`,
+        order_id: order.razorpay_order_id,
+        handler: async (response) => {
+          Toast.success('Payment successful! Order confirmed.');
+          setTimeout(() => window.location.href = '/pages/orders.html', 2000);
+        },
+        prefill: { name, contact: phone, email: State.user?.email || '' },
+        theme: { color: '#0a0a0a' },
+        modal: {
+          ondismiss: () => {
+            btn.disabled = false;
+            btn.textContent = 'Place Order';
+          }
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } else {
+      Toast.success(`Order placed! Order #${order.order_number}`);
+      setTimeout(() => window.location.href = '/pages/orders.html', 2000);
+    }
+  } catch (err) {
+    Toast.error(err.message || 'Failed to place order');
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
+  }
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+loadSummary();
+updateCartCount();
+</script>
+</body>
+</html>

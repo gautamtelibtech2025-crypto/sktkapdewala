@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sktkapdewala – Multi-Store Fashion</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#0a0a0a"/><path d="M8 8h16v4H8V8zm0 6h16v4H8v-4zm0 6h10v4H8v-4z" fill="#c9a96e"/></svg>
+      Skt<span>Kapdewala</span>
+    </a>
+
+    <div class="nav-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search shirts, jeans, t-shirts..." autocomplete="off" />
+    </div>
+
+    <nav class="nav-menu">
+      <a href="/" class="nav-link active">Home</a>
+      <a href="/pages/products.html" class="nav-link">Shop</a>
+      <a href="/pages/orders.html" class="nav-link">Orders</a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="store-switch" id="storeSwitchNav">
+        <button class="store-btn" data-store="SktUdaipur">Udaipur</button>
+        <button class="store-btn" data-store="SktBinder">Binder</button>
+        <button class="store-btn active" data-store="SktCommerce">All</button>
+      </div>
+
+      <a href="/pages/cart.html" class="nav-icon-btn" style="position:relative;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+
+      <div id="navAuthArea">
+        <button class="nav-user-btn" id="loginNavBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Login
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero-slide active" style="background-image: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-slide" style="background-image: linear-gradient(135deg, #2d1b00 0%, #5c3d11 50%, #8b6914 100%)">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="container hero-content">
+    <div class="store-badge">
+      <span>🏬</span>
+      <span id="heroBadgeText">All Stores · Udaipur & Binder</span>
+    </div>
+    <h1 class="heading-xl" style="color:white">Fashion That <br>Defines You</h1>
+    <p style="color:rgba(255,255,255,0.85)">Premium collection of shirts, jeans, pants & more.<br>Explore across our multi-city stores.</p>
+    <div class="hero-actions">
+      <a href="/pages/products.html" class="btn btn-gold btn-lg">Shop Now</a>
+      <a href="/pages/products.html" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.5)">Browse Collection</a>
+    </div>
+  </div>
+  <div class="hero-dots">
+    <div class="hero-dot active" data-idx="0"></div>
+    <div class="hero-dot" data-idx="1"></div>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section class="section-sm" style="background:var(--gray-50); border-bottom:1px solid var(--gray-200)">
+  <div class="container">
+    <div class="category-pills" id="categoryPills">
+      <div class="cat-pill active" data-cat="">
+        <div class="cat-pill-icon">👕</div>
+        <div class="cat-pill-name">All</div>
+      </div>
+      <div class="cat-pill" data-cat="shirts">
+        <div class="cat-pill-icon">👔</div>
+        <div class="cat-pill-name">Shirts</div>
+      </div>
+      <div class="cat-pill" data-cat="jeans">
+        <div class="cat-pill-icon">👖</div>
+        <div class="cat-pill-name">Jeans</div>
+      </div>
+      <div class="cat-pill" data-cat="pants">
+        <div class="cat-pill-icon">🩲</div>
+        <div class="cat-pill-name">Pants</div>
+      </div>
+      <div class="cat-pill" data-cat="tshirts">
+        <div class="cat-pill-icon">🛍️</div>
+        <div class="cat-pill-name">T-Shirts</div>
+      </div>
+      <div class="cat-pill" data-cat="lowers">
+        <div class="cat-pill-icon">🩳</div>
+        <div class="cat-pill-name">Lowers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED PRODUCTS ============ -->
+<section class="section">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px">
+      <div>
+        <p class="text-muted text-small" style="text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:6px">Featured Collection</p>
+        <h2 class="heading-lg">Trending Now</h2>
+      </div>
+      <a href="/pages/products.html" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="product-grid" id="featuredProducts">
+      <!-- Skeleton loaders -->
+      <div class="product-card"><div class="product-img-wrap skeleton" style="aspect-ratio:3/4"></div><div class="product-info"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:16px;width:80%;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:40%"></div></div></div>
+      <div class="product-card"><div class="product-img-wrap skeleton" style="aspect-ratio:3/4"></div><div class="product-info"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:16px;width:80%;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:40%"></div></div></div>
+      <div class="product-card"><div class="product-img-wrap skeleton" style="aspect-ratio:3/4"></div><div class="product-info"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:16px;width:80%;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:40%"></div></div></div>
+      <div class="product-card"><div class="product-img-wrap skeleton" style="aspect-ratio:3/4"></div><div class="product-info"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:16px;width:80%;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:40%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STORE BANNERS ============ -->
+<section class="section-sm" style="background:var(--gray-50)">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:40px;color:white;cursor:pointer" onclick="switchStore('SktUdaipur')">
+        <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;opacity:0.6;margin-bottom:8px">STORE 01</div>
+        <h3 style="font-family:var(--font-display);font-size:1.75rem;margin-bottom:8px">SKT Udaipur</h3>
+        <p style="opacity:0.7;font-size:0.9rem;margin-bottom:20px">City of Lakes fashion destination</p>
+        <span class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.4);font-size:0.8rem;padding:8px 20px">Shop Udaipur →</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#2d1b00,#8b6914);border-radius:16px;padding:40px;color:white;cursor:pointer" onclick="switchStore('SktBinder')">
+        <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;opacity:0.6;margin-bottom:8px">STORE 02</div>
+        <h3 style="font-family:var(--font-display);font-size:1.75rem;margin-bottom:8px">SKT Binder</h3>
+        <p style="opacity:0.7;font-size:0.9rem;margin-bottom:20px">Exclusive fashion at Binder store</p>
+        <span class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.4);font-size:0.8rem;padding:8px 20px">Shop Binder →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEW ARRIVALS ============ -->
+<section class="section">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px">
+      <div>
+        <p class="text-muted text-small" style="text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:6px">Just In</p>
+        <h2 class="heading-lg">New Arrivals</h2>
+      </div>
+      <a href="/pages/products.html?sort=new" class="btn btn-outline btn-sm">See All</a>
+    </div>
+    <div class="product-grid" id="newArrivals">
+      <div class="page-loader"><div class="spinner"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer style="background:var(--black);color:rgba(255,255,255,0.7);padding:60px 0 32px">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:white;margin-bottom:12px">Skt<span style="color:var(--gold)">Kapdewala</span></div>
+        <p style="font-size:0.875rem;line-height:1.7;max-width:260px">Premium multi-store fashion for men. Quality clothing from Udaipur and Binder.</p>
+      </div>
+      <div>
+        <div style="color:white;font-weight:600;margin-bottom:16px;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em">Shop</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.875rem">
+          <a href="/pages/products.html?cat=shirts" style="color:inherit;transition:color 0.2s" onmouseover="this.style.color='white'" onmouseout="this.style.color='inherit'">Shirts</a>
+          <a href="/pages/products.html?cat=jeans" style="color:inherit;transition:color 0.2s" onmouseover="this.style.color='white'" onmouseout="this.style.color='inherit'">Jeans</a>
+          <a href="/pages/products.html?cat=tshirts" style="color:inherit;transition:color 0.2s" onmouseover="this.style.color='white'" onmouseout="this.style.color='inherit'">T-Shirts</a>
+          <a href="/pages/products.html?cat=pants" style="color:inherit;transition:color 0.2s" onmouseover="this.style.color='white'" onmouseout="this.style.color='inherit'">Pants</a>
+        </div>
+      </div>
+      <div>
+        <div style="color:white;font-weight:600;margin-bottom:16px;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em">Stores</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.875rem">
+          <span style="cursor:pointer" onclick="switchStore('SktUdaipur')">SKT Udaipur</span>
+          <span style="cursor:pointer" onclick="switchStore('SktBinder')">SKT Binder</span>
+          <span style="cursor:pointer" onclick="switchStore('SktCommerce')">All Stores</span>
+        </div>
+      </div>
+      <div>
+        <div style="color:white;font-weight:600;margin-bottom:16px;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em">Account</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.875rem">
+          <a href="#" onclick="openAuthModal()" style="color:inherit">Login / Register</a>
+          <a href="/pages/orders.html" style="color:inherit">My Orders</a>
+          <a href="/pages/cart.html" style="color:inherit">Cart</a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <p style="font-size:0.8rem">© 2025 Sktkapdewala. All rights reserved.</p>
+      <p style="font-size:0.8rem">Made with ♥ in Rajasthan</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ AUTH MODAL ============ -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-title">Welcome Back</div>
+      <div class="modal-subtitle">Sign in to your account to continue</div>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Login</div>
+      <div class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">Register</div>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="loginPanel">
+      <div class="auth-method-toggle">
+        <div class="method-btn active" id="emailMethodBtn" onclick="switchLoginMethod('email')">📧 Email</div>
+        <div class="method-btn" id="phoneMethodBtn" onclick="switchLoginMethod('phone')">📱 Mobile OTP</div>
+      </div>
+
+      <div id="emailLoginForm">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="Enter password" />
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doEmailLogin()">Login</button>
+      </div>
+
+      <div id="phoneLoginForm" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <input type="tel" class="form-input" id="loginPhone" placeholder="+91 98765 43210" />
+        </div>
+        <div id="otpSection" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Enter OTP</label>
+            <input type="text" class="form-input" id="loginOtp" placeholder="6-digit OTP" maxlength="6" style="letter-spacing:0.2em;font-size:1.1rem;text-align:center" />
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" id="otpActionBtn" onclick="handleOTPFlow()">Send OTP</button>
+      </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div id="registerPanel" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="regName" placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="regEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number (optional)</label>
+        <input type="tel" class="form-input" id="regPhone" placeholder="+91 98765 43210" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="regPassword" placeholder="Min 8 characters" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script src="js/api.js"></script>
+<script>
+// ---- HOME PAGE LOGIC ----
+
+// Hero Slider
+let currentSlide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.hero-dot');
+
+function showSlide(idx) {
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+  slides[idx].classList.add('active');
+  dots[idx].classList.add('active');
+  currentSlide = idx;
+}
+
+dots.forEach(dot => dot.addEventListener('click', () => showSlide(parseInt(dot.dataset.idx))));
+setInterval(() => showSlide((currentSlide + 1) % slides.length), 5000);
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.value.trim()) {
+    window.location.href = `/pages/products.html?search=${encodeURIComponent(e.target.value.trim())}`;
+  }
+});
+
+// Store switch
+function switchStore(mode) {
+  State.setStore(mode);
+  document.querySelectorAll('.store-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.store === mode);
+  });
+  const labels = { SktUdaipur: 'Store · Udaipur', SktBinder: 'Store · Binder', SktCommerce: 'All Stores · Udaipur & Binder' };
+  document.getElementById('heroBadgeText').textContent = labels[mode] || 'All Stores';
+  loadFeaturedProducts();
+}
+
+document.querySelectorAll('.store-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchStore(btn.dataset.store));
+});
+
+// Set initial store
+const savedStore = State.storeMode;
+document.querySelectorAll('.store-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.store === savedStore);
+});
+
+// Category pills
+document.querySelectorAll('.cat-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const cat = pill.dataset.cat;
+    if (cat) {
+      window.location.href = `/pages/products.html?cat=${cat}`;
+    } else {
+      loadFeaturedProducts();
+    }
+  });
+});
+
+// Load products
+function renderProductCard(p) {
+  const img = p.images?.[0] || '/assets/product-placeholder.svg';
+  const price = p.sale_price || p.base_price;
+  const original = p.sale_price ? p.base_price : null;
+  const discount = original ? Math.round((1 - price/original) * 100) : 0;
+  const stores = p.inventory || [];
+  
+  return `
+    <div class="product-card" onclick="window.location='/pages/product.html?id=${p.id}'">
+      <div class="product-img-wrap">
+        <img src="${img}" alt="${p.name}" loading="lazy" onerror="this.src='/assets/product-placeholder.svg'" />
+        ${discount > 0 ? `<span class="product-badge sale">${discount}% OFF</span>` : '<span class="product-badge">New</span>'}
+        <div class="product-quick-add">
+          <button class="btn btn-primary btn-sm btn-full" onclick="quickAddToCart(event,'${p.id}','${stores[0]?.store_id||''}')">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-store">${p.category_name || 'Fashion'}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">
+          <span class="price-current">${formatCurrency(price)}</span>
+          ${original ? `<span class="price-original">${formatCurrency(original)}</span>` : ''}
+          ${discount > 0 ? `<span class="price-discount">-${discount}%</span>` : ''}
+        </div>
+        <div class="product-availability">
+          ${stores.map(s => `<span class="store-tag ${s.stock > 0 ? 'in-stock' : 'out-stock'}">${s.store_name}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadFeaturedProducts() {
+  const container = document.getElementById('featuredProducts');
+  const storeParam = State.storeMode !== 'SktCommerce' ? State.storeMode.toLowerCase().replace('skt','skt') : '';
+  try {
+    const params = { limit: 8 };
+    if (storeParam && storeParam !== 'sktcommerce') {
+      params.store = storeParam === 'sktudaipur' ? 'sktudaipur' : 'sktbinder';
+    }
+    const data = await API.products.list(params);
+    const products = data.data?.products || [];
+    if (!products.length) {
+      container.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🛍️</div><div class="empty-title">No products yet</div><p>Products will appear here once added.</p></div>`;
+      return;
+    }
+    container.innerHTML = products.map(renderProductCard).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load products</div><p>Make sure the backend is running at localhost:3000</p></div>`;
+  }
+}
+
+async function loadNewArrivals() {
+  const container = document.getElementById('newArrivals');
+  try {
+    const data = await API.products.list({ limit: 4, sortBy: 'created_at', order: 'DESC' });
+    const products = data.data?.products || [];
+    if (!products.length) { container.innerHTML = ''; return; }
+    container.innerHTML = products.map(renderProductCard).join('');
+  } catch {
+    container.innerHTML = '';
+  }
+}
+
+async function quickAddToCart(e, productId, storeId) {
+  e.stopPropagation();
+  if (!storeId) { Toast.error('Product not available in store'); return; }
+  try {
+    await API.cart.add({ product_id: productId, store_id: storeId, quantity: 1 });
+    Toast.success('Added to cart!');
+    updateCartCount();
+  } catch (err) {
+    Toast.error(err.message || 'Failed to add to cart');
+  }
+}
+
+// ---- AUTH ----
+function openAuthModal() { document.getElementById('authModal').classList.add('open'); }
+function closeAuthModal() { document.getElementById('authModal').classList.remove('open'); }
+
+document.getElementById('authModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAuthModal();
+});
+
+function switchAuthTab(tab) {
+  document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+  document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+  document.getElementById('loginPanel').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('registerPanel').style.display = tab === 'register' ? '' : 'none';
+}
+
+let loginMethod = 'email';
+let otpSent = false;
+
+function switchLoginMethod(method) {
+  loginMethod = method;
+  document.getElementById('emailMethodBtn').classList.toggle('active', method === 'email');
+  document.getElementById('phoneMethodBtn').classList.toggle('active', method === 'phone');
+  document.getElementById('emailLoginForm').style.display = method === 'email' ? '' : 'none';
+  document.getElementById('phoneLoginForm').style.display = method === 'phone' ? '' : 'none';
+  otpSent = false;
+}
+
+async function handleOTPFlow() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (!phone) { Toast.error('Enter mobile number'); return; }
+
+  if (!otpSent) {
+    try {
+      const res = await API.auth.sendOTP(phone);
+      otpSent = true;
+      document.getElementById('otpSection').style.display = '';
+      document.getElementById('otpActionBtn').textContent = 'Verify OTP';
+      Toast.success('OTP sent! ' + (res.otp ? `(Dev: ${res.otp})` : ''));
+    } catch (err) { Toast.error(err.message); }
+  } else {
+    const otp = document.getElementById('loginOtp').value.trim();
+    if (!otp) { Toast.error('Enter OTP'); return; }
+    try {
+      const res = await API.auth.verifyOTP({ phone, otp });
+      State.setUser(res.data.user, res.data.token);
+      updateNavAuth();
+      closeAuthModal();
+      Toast.success(`Welcome, ${res.data.user.name}!`);
+    } catch (err) { Toast.error(err.message); }
+  }
+}
+
+async function doEmailLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { Toast.error('Fill all fields'); return; }
+  try {
+    const res = await API.auth.login({ email, password });
+    State.setUser(res.data.user, res.data.token);
+    updateNavAuth();
+    closeAuthModal();
+    Toast.success(`Welcome back, ${res.data.user.name}!`);
+  } catch (err) { Toast.error(err.message || 'Login failed'); }
+}
+
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if (!name || !email || !password) { Toast.error('Fill all required fields'); return; }
+  try {
+    const res = await API.auth.register({ name, email, phone: phone || undefined, password });
+    State.setUser(res.data.user, res.data.token);
+    updateNavAuth();
+    closeAuthModal();
+    Toast.success('Account created!');
+  } catch (err) { Toast.error(err.message || 'Registration failed'); }
+}
+
+function updateNavAuth() {
+  const area = document.getElementById('navAuthArea');
+  if (State.user) {
+    const isAdmin = State.user.role === 'admin';
+    area.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        ${isAdmin ? `<a href="/pages/admin.html" class="btn btn-ghost btn-sm">Admin</a>` : ''}
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--gray-100);border-radius:100px;font-size:0.85rem;font-weight:500;cursor:pointer" onclick="doLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ${State.user.name?.split(' ')[0] || 'Account'}
+        </div>
+      </div>
+    `;
+  } else {
+    area.innerHTML = `<button class="nav-user-btn" id="loginNavBtn" onclick="openAuthModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Login
+    </button>`;
+  }
+}
+
+function doLogout() {
+  State.logout();
+  updateNavAuth();
+  Toast.info('Logged out');
+}
+
+document.getElementById('loginNavBtn')?.addEventListener('click', openAuthModal);
+
+// Init
+updateNavAuth();
+updateCartCount();
+loadFeaturedProducts();
+loadNewArrivals();
+</script>
+</body>
+</html>

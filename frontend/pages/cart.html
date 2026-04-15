@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart – Sktkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">Skt<span>Kapdewala</span></a>
+    <div class="nav-actions">
+      <a href="/pages/cart.html" class="nav-icon-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container section">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="breadcrumb-sep">›</span>
+    <span>Cart</span>
+  </div>
+
+  <h1 class="heading-lg" style="margin-bottom:32px">Shopping Cart</h1>
+
+  <div class="cart-layout" id="cartLayout">
+    <div class="page-loader"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/api.js"></script>
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+async function loadCart() {
+  const layout = document.getElementById('cartLayout');
+  try {
+    const data = await API.cart.get();
+    const cart = data.data?.cart;
+    const items = cart?.items || [];
+
+    if (!items.length) {
+      layout.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">🛒</div>
+          <div class="empty-title">Your cart is empty</div>
+          <p style="margin-bottom:24px">Looks like you haven't added anything yet.</p>
+          <a href="/pages/products.html" class="btn btn-primary">Start Shopping</a>
+        </div>
+      `;
+      return;
+    }
+
+    const subtotal = items.reduce((sum, item) => sum + (item.price_at_add * item.quantity), 0);
+
+    // Group by store
+    const byStore = {};
+    items.forEach(item => {
+      const storeName = item.store_name || 'Store';
+      if (!byStore[storeName]) byStore[storeName] = [];
+      byStore[storeName].push(item);
+    });
+
+    layout.innerHTML = `
+      <div>
+        <div class="cart-items">
+          ${Object.entries(byStore).map(([storeName, storeItems]) => `
+            <div style="padding:16px 20px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)">
+              <span style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-500)">🏬 ${storeName}</span>
+            </div>
+            ${storeItems.map(item => `
+              <div class="cart-item" id="item-${item.id}">
+                <div class="cart-item-img">
+                  <img src="${item.images?.[0] || '/assets/product-placeholder.svg'}" alt="${item.product_name}" onerror="this.src='/assets/product-placeholder.svg'" />
+                </div>
+                <div class="cart-item-info">
+                  <div class="cart-item-store">${item.store_name}</div>
+                  <div class="cart-item-name">${item.product_name}</div>
+                  ${item.size ? `<div style="font-size:0.8rem;color:var(--gray-500)">Size: ${item.size}</div>` : ''}
+                  <div class="cart-qty" style="margin-top:10px">
+                    <button class="qty-btn" onclick="updateQty('${item.id}', ${item.quantity - 1})">−</button>
+                    <span class="qty-value">${item.quantity}</span>
+                    <button class="qty-btn" onclick="updateQty('${item.id}', ${item.quantity + 1})">+</button>
+                    <button onclick="removeItem('${item.id}')" style="margin-left:8px;color:var(--error);font-size:0.8rem;cursor:pointer">Remove</button>
+                  </div>
+                </div>
+                <div class="cart-item-price">
+                  ${formatCurrency(item.price_at_add * item.quantity)}
+                  <div style="font-size:0.75rem;color:var(--gray-400);font-weight:400">${formatCurrency(item.price_at_add)} each</div>
+                </div>
+              </div>
+            `).join('')}
+          `).join('')}
+        </div>
+      </div>
+
+      <div>
+        <div class="cart-summary">
+          <h3 class="heading-sm" style="margin-bottom:20px">Order Summary</h3>
+          ${Object.entries(byStore).map(([storeName, storeItems]) => {
+            const storeTotal = storeItems.reduce((sum, i) => sum + (i.price_at_add * i.quantity), 0);
+            return `<div class="summary-row"><span>${storeName}</span><span>${formatCurrency(storeTotal)}</span></div>`;
+          }).join('')}
+          <div class="summary-row"><span>Shipping</span><span style="color:var(--success)">Free</span></div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${formatCurrency(subtotal)}</span>
+          </div>
+          <a href="/pages/checkout.html" class="btn btn-primary btn-full btn-lg" style="margin-top:20px">
+            Proceed to Checkout →
+          </a>
+          <a href="/pages/products.html" class="btn btn-ghost btn-full btn-sm" style="margin-top:10px">Continue Shopping</a>
+        </div>
+      </div>
+    `;
+
+    updateCartCount();
+  } catch (err) {
+    layout.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load cart</div><p>${err.message}</p></div>`;
+  }
+}
+
+async function updateQty(itemId, qty) {
+  if (qty < 1) { removeItem(itemId); return; }
+  try {
+    await API.cart.update({ item_id: itemId, quantity: qty });
+    loadCart();
+  } catch (err) { Toast.error(err.message); }
+}
+
+async function removeItem(itemId) {
+  try {
+    await API.cart.remove({ item_id: itemId });
+    Toast.success('Item removed');
+    loadCart();
+  } catch (err) { Toast.error(err.message); }
+}
+
+loadCart();
+</script>
+</body>
+</html>

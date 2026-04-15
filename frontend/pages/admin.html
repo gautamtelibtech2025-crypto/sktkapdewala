@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Sktkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <style>
+    body { background: var(--gray-50); }
+    .admin-content { overflow-y: auto; }
+    .admin-page { min-height: calc(100vh - 64px); }
+    .img-preview { width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--gray-200); }
+    .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1.5px solid var(--gray-200); border-radius: var(--radius); }
+    .tag-item { background: var(--gray-100); padding: 3px 10px; border-radius: 100px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+    .section-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <div style="font-size:0.7rem;opacity:0.4;margin-bottom:2px">ADMIN PANEL</div>
+      Skt<span style="color:var(--gold)">Kapdewala</span>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-link active" onclick="showPage('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="admin-nav-link" onclick="showPage('products')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Products
+      </div>
+      <div class="admin-nav-link" onclick="showPage('inventory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+        Inventory
+      </div>
+      <div class="admin-nav-link" onclick="showPage('orders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        Orders
+      </div>
+      <div class="admin-nav-link" onclick="showPage('users')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </div>
+      <div class="admin-nav-link" onclick="showPage('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+      <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;margin-top:24px">
+        <a href="/" class="admin-nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Back to Store
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Content -->
+  <div class="admin-content" style="flex:1">
+    <div class="admin-topbar">
+      <div style="font-weight:600;font-size:1rem" id="adminPageTitle">Dashboard</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <span style="font-size:0.85rem;color:var(--gray-500)" id="adminUserName">Admin</span>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-page active" id="page-dashboard">
+      <div style="padding:32px">
+        <div class="section-title">Overview</div>
+        <div class="stat-cards" id="dashStats">
+          <div class="stat-card"><div class="stat-card-icon">👥</div><div class="stat-card-label">Total Users</div><div class="stat-card-value skeleton" style="height:40px;width:80px"></div></div>
+          <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-label">Total Orders</div><div class="stat-card-value skeleton" style="height:40px;width:80px"></div></div>
+          <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">Revenue</div><div class="stat-card-value skeleton" style="height:40px;width:120px"></div></div>
+          <div class="stat-card"><div class="stat-card-icon">🏬</div><div class="stat-card-label">Stores</div><div class="stat-card-value">2</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px">
+          <div>
+            <div style="font-weight:700;margin-bottom:16px">Recent Orders</div>
+            <div class="table-wrap" id="recentOrdersTable">
+              <div class="page-loader" style="min-height:120px"><div class="spinner"></div></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:700;margin-bottom:16px">Store Revenue</div>
+            <div class="table-wrap" id="storeRevenueTable">
+              <div class="page-loader" style="min-height:120px"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px">
+          <div style="font-weight:700;margin-bottom:16px">⚠️ Low Stock Alert</div>
+          <div class="table-wrap" id="lowStockTable">
+            <div class="page-loader" style="min-height:80px"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="admin-page" id="page-products">
+      <div style="padding:32px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <div class="section-title" style="margin:0">Products</div>
+          <button class="btn btn-primary" onclick="showAddProductForm()">+ Add Product</button>
+        </div>
+
+        <!-- Add/Edit Form -->
+        <div id="productForm" style="display:none;background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 class="heading-sm" id="productFormTitle">Add Product</h3>
+            <button onclick="hideProductForm()" style="color:var(--gray-400);font-size:1.2rem;cursor:pointer">✕</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Product Name *</label>
+              <input type="text" class="form-input" id="pName" placeholder="e.g. Classic White Shirt" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Brand</label>
+              <input type="text" class="form-input" id="pBrand" placeholder="Brand name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-input" id="pCategory">
+                <option value="">Select category</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">SKU</label>
+              <input type="text" class="form-input" id="pSku" placeholder="SKT-001" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Base Price (₹) *</label>
+              <input type="number" class="form-input" id="pPrice" placeholder="999" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sale Price (₹)</label>
+              <input type="number" class="form-input" id="pSalePrice" placeholder="799" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="pDesc" rows="3" placeholder="Product description..."></textarea>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Sizes (comma separated)</label>
+              <input type="text" class="form-input" id="pSizes" placeholder="S, M, L, XL, XXL" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Colors (comma separated)</label>
+              <input type="text" class="form-input" id="pColors" placeholder="White, Black, Blue" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Product Images (max 10MB each)</label>
+            <input type="file" class="form-input" id="pImages" multiple accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Product Video (max 100MB)</label>
+            <input type="file" class="form-input" id="pVideo" accept="video/*" />
+          </div>
+
+          <div style="margin-bottom:20px">
+            <label class="form-label" style="margin-bottom:12px">Store Inventory</label>
+            <div id="inventoryInputs"></div>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-wrap" id="productsTable">
+          <div class="page-loader"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="admin-page" id="page-inventory">
+      <div style="padding:32px">
+        <div class="section-title">Inventory Management</div>
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:24px">
+          <div style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:24px">
+            <h3 class="heading-sm" style="margin-bottom:16px">Update Stock</h3>
+            <div class="form-group">
+              <label class="form-label">Store</label>
+              <select class="form-input" id="invStore"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Product</label>
+              <select class="form-input" id="invProduct"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stock Quantity</label>
+              <input type="number" class="form-input" id="invStock" placeholder="0" min="0" />
+            </div>
+            <button class="btn btn-primary btn-full" onclick="updateInventory()">Update Stock</button>
+          </div>
+          <div class="table-wrap" id="inventoryTable">
+            <div class="page-loader"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="admin-page" id="page-orders">
+      <div style="padding:32px">
+        <div class="section-title">All Orders</div>
+        <div class="table-wrap" id="allOrdersTable">
+          <div class="page-loader"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="admin-page" id="page-users">
+      <div style="padding:32px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <div class="section-title" style="margin:0">Users</div>
+          <input type="text" class="form-input" id="userSearch" placeholder="Search users..." style="width:240px" oninput="loadUsers()" />
+        </div>
+        <div class="table-wrap" id="usersTable">
+          <div class="page-loader"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="admin-page" id="page-settings">
+      <div style="padding:32px">
+        <div class="section-title">Store Settings</div>
+        <div style="max-width:600px">
+          <div style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px">
+            <h3 class="heading-sm" style="margin-bottom:20px">Upload Assets</h3>
+            <div class="form-group">
+              <label class="form-label">Store Logo</label>
+              <input type="file" class="form-input" id="logoUpload" accept="image/*" onchange="uploadAsset('logo')" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Banner Image 1</label>
+              <input type="file" class="form-input" id="banner1Upload" accept="image/*" onchange="uploadAsset('banner1')" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Banner Image 2</label>
+              <input type="file" class="form-input" id="banner2Upload" accept="image/*" onchange="uploadAsset('banner2')" />
+            </div>
+          </div>
+          <div style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px">
+            <h3 class="heading-sm" style="margin-bottom:20px">Site Settings</h3>
+            <div class="form-group">
+              <label class="form-label">Store Tagline</label>
+              <input type="text" class="form-input" id="settingTagline" placeholder="Premium Multi-Store Fashion" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Phone</label>
+              <input type="text" class="form-input" id="settingPhone" placeholder="+91 98765 43210" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Email</label>
+              <input type="email" class="form-input" id="settingEmail" placeholder="info@sktkapdewala.com" />
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/api.js"></script>
+<script>
+// ---- Admin Auth Check ----
+if (!State.user || State.user.role !== 'admin') {
+  alert('Admin access required. Please login as admin.');
+  window.location.href = '/';
+}
+
+document.getElementById('adminUserName').textContent = State.user?.name || 'Admin';
+
+// ---- Page Navigation ----
+const pageTitles = { dashboard: 'Dashboard', products: 'Products', inventory: 'Inventory', orders: 'Orders', users: 'Users', settings: 'Settings' };
+
+function showPage(name) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('adminPageTitle').textContent = pageTitles[name];
+  document.querySelectorAll('.admin-nav-link')[['dashboard','products','inventory','orders','users','settings'].indexOf(name)].classList.add('active');
+
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'products') loadAdminProducts();
+  if (name === 'inventory') loadInventoryPage();
+  if (name === 'orders') loadAllOrders();
+  if (name === 'users') loadUsers();
+  if (name === 'settings') loadSettings();
+}
+
+// ---- Dashboard ----
+async function loadDashboard() {
+  try {
+    const data = await API.admin.dashboard();
+    const d = data.data;
+
+    document.getElementById('dashStats').innerHTML = `
+      <div class="stat-card"><div class="stat-card-icon">👥</div><div class="stat-card-label">Total Users</div><div class="stat-card-value">${d.totalUsers}</div></div>
+      <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-label">Total Orders</div><div class="stat-card-value">${Object.values(d.orderStats).reduce((a,b)=>a+b,0)}</div></div>
+      <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">Total Revenue</div><div class="stat-card-value">${formatCurrency(d.totalRevenue)}</div></div>
+      <div class="stat-card"><div class="stat-card-icon">✅</div><div class="stat-card-label">Delivered</div><div class="stat-card-value">${d.orderStats.delivered || 0}</div></div>
+    `;
+
+    document.getElementById('recentOrdersTable').innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>
+          ${d.recentOrders.map(o => `
+            <tr>
+              <td style="font-weight:600">${o.order_number}</td>
+              <td>${o.user_name || 'Guest'}</td>
+              <td style="font-weight:600">${formatCurrency(o.total)}</td>
+              <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
+    document.getElementById('storeRevenueTable').innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Store</th><th>Orders</th><th>Revenue</th></tr></thead>
+        <tbody>
+          ${d.storeRevenue.map(s => `
+            <tr>
+              <td style="font-weight:600">${s.store_name}</td>
+              <td>${s.orders}</td>
+              <td style="font-weight:600">${formatCurrency(s.revenue)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
+    document.getElementById('lowStockTable').innerHTML = d.lowStock.length ? `
+      <table class="data-table">
+        <thead><tr><th>Product</th><th>Store</th><th>Stock</th></tr></thead>
+        <tbody>
+          ${d.lowStock.map(s => `
+            <tr>
+              <td>${s.name}</td>
+              <td>${s.store_name}</td>
+              <td><span style="color:${s.stock === 0 ? 'var(--error)' : 'var(--warning)'};font-weight:700">${s.stock}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : '<div style="padding:24px;text-align:center;color:var(--gray-400)">✅ All products have adequate stock</div>';
+
+  } catch (err) {
+    Toast.error('Dashboard load failed: ' + err.message);
+  }
+}
+
+// ---- Products ----
+let categories = [];
+let stores = [];
+let editingProductId = null;
+
+async function loadAdminProducts() {
+  const table = document.getElementById('productsTable');
+  try {
+    const [pData, cData, sData] = await Promise.all([
+      API.products.list({ limit: 50 }),
+      API.products.categories(),
+      API.inventory.stores()
+    ]);
+    categories = cData.data?.categories || [];
+    stores = sData.data?.stores || [];
+
+    // Populate category select
+    const catSel = document.getElementById('pCategory');
+    catSel.innerHTML = '<option value="">Select category</option>' + categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+    const products = pData.data?.products || [];
+    table.innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${products.map(p => {
+            const totalStock = (p.inventory || []).reduce((s, inv) => s + inv.stock, 0);
+            return `
+            <tr>
+              <td><img src="${p.images?.[0] || '/assets/product-placeholder.svg'}" class="img-preview" onerror="this.src='/assets/product-placeholder.svg'" /></td>
+              <td style="font-weight:600;max-width:200px">${p.name}</td>
+              <td>${p.category_name || '-'}</td>
+              <td style="font-weight:600">${formatCurrency(p.sale_price || p.base_price)}</td>
+              <td><span style="color:${totalStock > 0 ? 'var(--success)' : 'var(--error)'};font-weight:700">${totalStock}</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
+                  <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteProduct('${p.id}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `}).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    table.innerHTML = `<div style="padding:24px;color:var(--error)">${err.message}</div>`;
+  }
+}
+
+function showAddProductForm() {
+  editingProductId = null;
+  document.getElementById('productFormTitle').textContent = 'Add Product';
+  document.getElementById('pName').value = '';
+  document.getElementById('pBrand').value = '';
+  document.getElementById('pDesc').value = '';
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pSalePrice').value = '';
+  document.getElementById('pSizes').value = '';
+  document.getElementById('pColors').value = '';
+  document.getElementById('pSku').value = '';
+
+  // Store inventory inputs
+  document.getElementById('inventoryInputs').innerHTML = stores.map(s => `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span style="font-size:0.875rem;font-weight:500;min-width:100px">${s.name}</span>
+      <input type="number" class="form-input" id="inv_${s.id}" placeholder="Stock" min="0" style="max-width:120px" />
+    </div>
+  `).join('');
+
+  document.getElementById('productForm').style.display = '';
+  document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideProductForm() {
+  document.getElementById('productForm').style.display = 'none';
+  editingProductId = null;
+}
+
+async function editProduct(id) {
+  try {
+    const data = await API.products.get(id);
+    const p = data.data.product;
+    editingProductId = id;
+
+    document.getElementById('productFormTitle').textContent = 'Edit Product';
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pBrand').value = p.brand || '';
+    document.getElementById('pDesc').value = p.description || '';
+    document.getElementById('pPrice').value = p.base_price;
+    document.getElementById('pSalePrice').value = p.sale_price || '';
+    document.getElementById('pSizes').value = (p.sizes || []).join(', ');
+    document.getElementById('pColors').value = (p.colors || []).join(', ');
+    document.getElementById('pSku').value = p.sku || '';
+
+    const catOpts = document.getElementById('pCategory');
+    [...catOpts.options].forEach(o => { if (o.value === p.category_id) o.selected = true; });
+
+    document.getElementById('inventoryInputs').innerHTML = stores.map(s => {
+      const inv = (p.inventory || []).find(i => i.store_id === s.id);
+      return `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <span style="font-size:0.875rem;font-weight:500;min-width:100px">${s.name}</span>
+          <input type="number" class="form-input" id="inv_${s.id}" value="${inv?.stock || 0}" min="0" style="max-width:120px" />
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('productForm').style.display = '';
+    document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+  } catch (err) { Toast.error(err.message); }
+}
+
+async function saveProduct() {
+  const name = document.getElementById('pName').value.trim();
+  const price = document.getElementById('pPrice').value;
+  if (!name || !price) { Toast.error('Name and price required'); return; }
+
+  try {
+    if (editingProductId) {
+      await API.products.update(editingProductId, {
+        name, description: document.getElementById('pDesc').value,
+        base_price: parseFloat(price),
+        sale_price: document.getElementById('pSalePrice').value ? parseFloat(document.getElementById('pSalePrice').value) : null,
+        brand: document.getElementById('pBrand').value,
+        sizes: document.getElementById('pSizes').value.split(',').map(s => s.trim()).filter(Boolean),
+        colors: document.getElementById('pColors').value.split(',').map(c => c.trim()).filter(Boolean),
+        category_id: document.getElementById('pCategory').value || null,
+      });
+
+      // Update inventory
+      for (const store of stores) {
+        const stock = document.getElementById('inv_' + store.id)?.value;
+        if (stock !== undefined) {
+          await API.inventory.set({ product_id: editingProductId, store_id: store.id, stock: parseInt(stock) || 0 });
+        }
+      }
+
+      Toast.success('Product updated!');
+    } else {
+      const form = new FormData();
+      form.append('name', name);
+      form.append('description', document.getElementById('pDesc').value);
+      form.append('base_price', parseFloat(price));
+      if (document.getElementById('pSalePrice').value) form.append('sale_price', parseFloat(document.getElementById('pSalePrice').value));
+      form.append('brand', document.getElementById('pBrand').value);
+      form.append('sku', document.getElementById('pSku').value);
+      if (document.getElementById('pCategory').value) form.append('category_id', document.getElementById('pCategory').value);
+      form.append('sizes', JSON.stringify(document.getElementById('pSizes').value.split(',').map(s => s.trim()).filter(Boolean)));
+      form.append('colors', JSON.stringify(document.getElementById('pColors').value.split(',').map(c => c.trim()).filter(Boolean)));
+
+      const inv = stores.map(s => ({ store_id: s.id, stock: parseInt(document.getElementById('inv_' + s.id)?.value) || 0 }));
+      form.append('inventory', JSON.stringify(inv));
+
+      const images = document.getElementById('pImages').files;
+      for (const file of images) form.append('images', file);
+
+      const video = document.getElementById('pVideo').files[0];
+      if (video) form.append('video', video);
+
+      await API.products.create(form);
+      Toast.success('Product created!');
+    }
+
+    hideProductForm();
+    loadAdminProducts();
+  } catch (err) { Toast.error(err.message); }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  try {
+    await API.products.delete(id);
+    Toast.success('Product deleted');
+    loadAdminProducts();
+  } catch (err) { Toast.error(err.message); }
+}
+
+// ---- Inventory ----
+async function loadInventoryPage() {
+  try {
+    const [invData, sData, pData] = await Promise.all([
+      API.inventory.list(),
+      API.inventory.stores(),
+      API.products.list({ limit: 100 })
+    ]);
+
+    const storeSelect = document.getElementById('invStore');
+    storeSelect.innerHTML = sData.data.stores.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+    const productSelect = document.getElementById('invProduct');
+    productSelect.innerHTML = (pData.data?.products || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+    const inv = invData.data?.inventory || [];
+    document.getElementById('inventoryTable').innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Product</th><th>Store</th><th>Stock</th><th>Updated</th></tr></thead>
+        <tbody>
+          ${inv.map(i => `
+            <tr>
+              <td style="font-weight:500">${i.product_name}</td>
+              <td>${i.store_name}</td>
+              <td><span style="font-weight:700;color:${i.stock > 5 ? 'var(--success)' : i.stock > 0 ? 'var(--warning)' : 'var(--error)'}">${i.stock}</span></td>
+              <td style="color:var(--gray-500)">${formatDate(i.updated_at)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (err) { Toast.error(err.message); }
+}
+
+async function updateInventory() {
+  const store_id = document.getElementById('invStore').value;
+  const product_id = document.getElementById('invProduct').value;
+  const stock = document.getElementById('invStock').value;
+  if (!store_id || !product_id || stock === '') { Toast.error('Fill all fields'); return; }
+  try {
+    await API.inventory.set({ store_id, product_id, stock: parseInt(stock) });
+    Toast.success('Stock updated!');
+    loadInventoryPage();
+  } catch (err) { Toast.error(err.message); }
+}
+
+// ---- Orders ----
+async function loadAllOrders() {
+  const table = document.getElementById('allOrdersTable');
+  try {
+    const data = await API.orders.list();
+    const orders = data.data?.orders || [];
+    table.innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Order #</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          ${orders.map(o => `
+            <tr>
+              <td style="font-weight:700">${o.order_number}</td>
+              <td>${(o.items || []).length} items</td>
+              <td style="font-weight:600">${formatCurrency(o.total)}</td>
+              <td>${o.payment_method}</td>
+              <td>
+                <select class="form-input" style="padding:4px 8px;font-size:0.8rem;width:auto" onchange="updateOrderStatus('${o.id}', this.value)">
+                  ${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                </select>
+              </td>
+              <td style="color:var(--gray-500)">${formatDate(o.created_at)}</td>
+              <td><a href="#" style="font-size:0.8rem;color:var(--black);font-weight:500">Details</a></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (err) { table.innerHTML = `<div style="padding:24px;color:var(--error)">${err.message}</div>`; }
+}
+
+async function updateOrderStatus(orderId, status) {
+  try {
+    await API.orders.updateStatus({ order_id: orderId, status });
+    Toast.success('Order status updated');
+  } catch (err) { Toast.error(err.message); }
+}
+
+// ---- Users ----
+async function loadUsers() {
+  const table = document.getElementById('usersTable');
+  const search = document.getElementById('userSearch')?.value?.trim() || '';
+  try {
+    const data = await API.admin.users({ search, limit: 50 });
+    const users = data.data?.users || [];
+    table.innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Verified</th><th>Joined</th></tr></thead>
+        <tbody>
+          ${users.map(u => `
+            <tr>
+              <td style="font-weight:600">${u.name || '-'}</td>
+              <td>${u.email || '-'}</td>
+              <td>${u.phone || '-'}</td>
+              <td><span class="status-badge ${u.role === 'admin' ? 'status-confirmed' : 'status-pending'}">${u.role}</span></td>
+              <td>${u.is_verified ? '✅' : '❌'}</td>
+              <td style="color:var(--gray-500)">${formatDate(u.created_at)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (err) { table.innerHTML = `<div style="padding:24px;color:var(--error)">${err.message}</div>`; }
+}
+
+// ---- Settings ----
+async function loadSettings() {
+  try {
+    const data = await API.admin.settings();
+    const settings = data.data?.settings || {};
+    if (settings.tagline) document.getElementById('settingTagline').value = settings.tagline;
+    if (settings.phone) document.getElementById('settingPhone').value = settings.phone;
+    if (settings.email) document.getElementById('settingEmail').value = settings.email;
+  } catch {}
+}
+
+async function saveSettings() {
+  try {
+    await API.admin.updateSetting({ key: 'tagline', value: document.getElementById('settingTagline').value });
+    await API.admin.updateSetting({ key: 'phone', value: document.getElementById('settingPhone').value });
+    await API.admin.updateSetting({ key: 'email', value: document.getElementById('settingEmail').value });
+    Toast.success('Settings saved!');
+  } catch (err) { Toast.error(err.message); }
+}
+
+async function uploadAsset(type) {
+  const inputId = type === 'logo' ? 'logoUpload' : type === 'banner1' ? 'banner1Upload' : 'banner2Upload';
+  const file = document.getElementById(inputId).files[0];
+  if (!file) return;
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const res = await API.admin.upload(form);
+    await API.admin.updateSetting({ key: type + '_url', value: res.data.url });
+    Toast.success(`${type} uploaded!`);
+  } catch (err) { Toast.error(err.message); }
+}
+
+function doLogout() {
+  State.logout();
+  window.location.href = '/';
+}
+
+// Init
+loadDashboard();
+</script>
+</body>
+</html>

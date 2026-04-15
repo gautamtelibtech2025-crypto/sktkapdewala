@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product - SKTkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">SKTkapdewala</a>
+    <div class="nav-actions">
+      <a href="/pages/cart.html" class="nav-icon-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container section" id="productContent">
+  <div class="page-loader"><div class="spinner"></div></div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/api.js"></script>
+<script>
+const productId = new URLSearchParams(window.location.search).get('id');
+let selectedStore = null;
+let selectedSize = null;
+let selectedColor = null;
+let product = null;
+
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+async function loadProduct() {
+  if (!productId) {
+    document.getElementById('productContent').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Product not found</div></div>';
+    return;
+  }
+  try {
+    const data = await API.products.get(productId);
+    product = data.data.product;
+    document.title = `${product.name} - SKTkapdewala`;
+    renderProduct();
+  } catch (err) {
+    document.getElementById('productContent').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load product</div><p>${err.message}</p></div>`;
+  }
+}
+
+function renderProduct() {
+  const p = product;
+  const price = p.sale_price || p.base_price;
+  const original = p.sale_price ? p.base_price : null;
+  const discount = original ? Math.round((1 - price/original) * 100) : 0;
+  const images = p.images?.length ? p.images : ['/assets/product-placeholder.svg'];
+  const inventory = p.inventory || [];
+  if (inventory.length) selectedStore = inventory[0].store_id;
+
+  document.getElementById('productContent').innerHTML = `
+    <div class="breadcrumb">
+      <a href="/">Home</a><span class="breadcrumb-sep">›</span>
+      <a href="/pages/products.html">Shop</a><span class="breadcrumb-sep">›</span>
+      <span>${p.name}</span>
+    </div>
+
+    <div class="product-detail">
+      <!-- Images -->
+      <div class="product-images">
+        <div class="main-image-wrap">
+          <img src="${images[0]}" alt="${p.name}" id="mainImg" onerror="this.src='/assets/product-placeholder.svg'" />
+        </div>
+        ${images.length > 1 ? `
+        <div class="image-thumbs">
+          ${images.map((img, i) => `
+            <div class="thumb ${i === 0 ? 'active' : ''}" onclick="changeImg('${img}', this)">
+              <img src="${img}" alt="" onerror="this.src='/assets/product-placeholder.svg'" />
+            </div>
+          `).join('')}
+        </div>` : ''}
+        ${p.video_url ? `
+        <div style="margin-top:16px;border-radius:var(--radius-lg);overflow:hidden">
+          <video controls style="width:100%;border-radius:var(--radius-lg)" src="${p.video_url}"></video>
+        </div>` : ''}
+      </div>
+
+      <!-- Info -->
+      <div class="product-detail-info">
+        <div style="margin-bottom:8px">
+          ${p.brand ? `<span style="font-size:0.75rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.1em">${p.brand}</span>` : ''}
+          ${p.category_name ? `<span class="store-tag" style="margin-left:8px">${p.category_name}</span>` : ''}
+        </div>
+
+        <h1 class="heading-lg" style="margin-bottom:16px">${p.name}</h1>
+
+        <div class="product-price" style="margin-bottom:20px">
+          <span class="price-current" style="font-size:1.75rem">${formatCurrency(price)}</span>
+          ${original ? `<span class="price-original" style="font-size:1rem">${formatCurrency(original)}</span>` : ''}
+          ${discount > 0 ? `<span class="price-discount" style="font-size:0.875rem">Save ${discount}%</span>` : ''}
+        </div>
+
+        ${p.description ? `<p style="color:var(--gray-600);line-height:1.8;margin-bottom:24px">${p.description}</p>` : ''}
+
+        ${p.sizes?.length ? `
+        <div style="margin-bottom:20px">
+          <div class="filter-label" style="margin-bottom:10px">Size</div>
+          <div class="size-options">
+            ${p.sizes.map(s => `<button class="size-btn" onclick="selectSize('${s}',this)">${s}</button>`).join('')}
+          </div>
+        </div>` : ''}
+
+        ${p.colors?.length ? `
+        <div style="margin-bottom:24px">
+          <div class="filter-label" style="margin-bottom:10px">Color</div>
+          <div class="color-options">
+            ${p.colors.map(c => `<button class="color-btn" style="background:${c}" title="${c}" onclick="selectColor('${c}',this)"></button>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <!-- Store availability -->
+        ${inventory.length ? `
+        <div class="store-availability" style="margin-bottom:24px">
+          <div class="filter-label" style="margin-bottom:12px">Store Availability</div>
+          ${inventory.map(inv => `
+            <div class="store-stock-item">
+              <div>
+                <div style="font-weight:600;font-size:0.9rem">${inv.store_name}</div>
+                <div style="font-size:0.75rem;color:var(--gray-500)">${inv.city || ''}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span class="stock-status ${inv.stock > 5 ? 'in-stock-badge' : inv.stock > 0 ? 'low-stock-badge' : 'out-badge'}">
+                  ${inv.stock > 5 ? 'In Stock' : inv.stock > 0 ? `Only ${inv.stock} left` : 'Out of Stock'}
+                </span>
+                ${inv.stock > 0 ? `<button class="btn btn-ghost btn-sm" onclick="selectStore('${inv.store_id}', this)">Select</button>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>` : ''}
+
+        <!-- Quantity -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+          <div class="filter-label">Quantity:</div>
+          <div class="cart-qty">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-value" id="qtyVal">1</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-lg" style="flex:1" onclick="addToCart()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Add to Cart
+          </button>
+          <button class="btn btn-gold btn-lg" style="flex:1" onclick="buyNow()">Buy Now</button>
+        </div>
+
+        ${p.tags?.length ? `
+        <div style="margin-top:24px;display:flex;gap:6px;flex-wrap:wrap">
+          ${p.tags.map(t => `<span class="store-tag">#${t}</span>`).join('')}
+        </div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function changeImg(src, el) {
+  document.getElementById('mainImg').src = src;
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+let qty = 1;
+function changeQty(delta) {
+  qty = Math.max(1, Math.min(99, qty + delta));
+  document.getElementById('qtyVal').textContent = qty;
+}
+
+function selectSize(size, btn) {
+  selectedSize = size;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectColor(color, btn) {
+  selectedColor = color;
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectStore(storeId, btn) {
+  selectedStore = storeId;
+  document.querySelectorAll('.store-stock-item .btn').forEach(b => {
+    b.textContent = 'Select';
+    b.className = 'btn btn-ghost btn-sm';
+  });
+  btn.textContent = '✓ Selected';
+  btn.className = 'btn btn-primary btn-sm';
+}
+
+async function addToCart() {
+  if (!selectedStore) {
+    Toast.error('Please select a store');
+    return false;
+  }
+  try {
+    await API.cart.add({
+      product_id: product.id,
+      store_id: selectedStore,
+      quantity: qty,
+      size: selectedSize,
+      color: selectedColor
+    });
+    Toast.success('Added to cart!');
+    updateCartCount();
+    return true;
+  } catch (err) {
+    Toast.error(err.message || 'Failed to add to cart');
+    return false;
+  }
+}
+
+async function buyNow() {
+  const added = await addToCart();
+  if (added) window.location.href = '/pages/cart.html';
+}
+
+updateCartCount();
+loadProduct();
+</script>
+</body>
+</html>

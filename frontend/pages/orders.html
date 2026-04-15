@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders – Sktkapdewala</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">Skt<span>Kapdewala</span></a>
+    <div class="nav-actions">
+      <a href="/pages/cart.html" class="nav-icon-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container section">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="breadcrumb-sep">›</span>
+    <span>My Orders</span>
+  </div>
+
+  <h1 class="heading-lg" style="margin-bottom:32px">My Orders</h1>
+
+  <div id="ordersContent">
+    <div class="page-loader"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/api.js"></script>
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+const statusColors = {
+  pending: 'status-pending',
+  confirmed: 'status-confirmed',
+  processing: 'status-confirmed',
+  shipped: 'status-confirmed',
+  delivered: 'status-delivered',
+  cancelled: 'status-cancelled',
+};
+
+async function loadOrders() {
+  const container = document.getElementById('ordersContent');
+
+  if (!State.user) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔐</div>
+        <div class="empty-title">Login to view orders</div>
+        <p style="margin-bottom:24px">Sign in to see your order history</p>
+        <a href="/" onclick="openAuthModal()" class="btn btn-primary">Login</a>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const data = await API.orders.list();
+    const orders = data.data?.orders || [];
+
+    if (!orders.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <div class="empty-title">No orders yet</div>
+          <p style="margin-bottom:24px">Your orders will appear here.</p>
+          <a href="/pages/products.html" class="btn btn-primary">Start Shopping</a>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = orders.map(order => `
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:20px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:4px">Order Number</div>
+            <div style="font-weight:700;font-size:1rem">${order.order_number}</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:4px">Date</div>
+            <div style="font-weight:500">${formatDate(order.created_at)}</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:4px">Payment</div>
+            <div style="font-weight:500">${order.payment_method === 'pay_at_store' ? '🏬 Pay at Store' : '💳 Online'}</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:4px">Total</div>
+            <div style="font-weight:700;font-size:1.1rem">${formatCurrency(order.total)}</div>
+          </div>
+          <div>
+            <span class="status-badge ${statusColors[order.status] || 'status-pending'}">${order.status}</span>
+          </div>
+        </div>
+
+        <div style="padding:20px">
+          ${(order.items || []).filter(i => i.product_name).map(item => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+              <div>
+                <div style="font-weight:500">${item.product_name}</div>
+                <div style="font-size:0.8rem;color:var(--gray-500)">🏬 ${item.store_name} · Qty: ${item.quantity}${item.size ? ` · Size: ${item.size}` : ''}</div>
+              </div>
+              <div style="font-weight:600">${formatCurrency(item.total)}</div>
+            </div>
+          `).join('')}
+
+          ${order.shipping_address ? `
+          <div style="margin-top:16px;padding:12px;background:var(--gray-50);border-radius:var(--radius);font-size:0.85rem">
+            <strong>Delivery to:</strong> ${JSON.parse(order.shipping_address || '{}').address || ''}, ${JSON.parse(order.shipping_address || '{}').city || ''} - ${JSON.parse(order.shipping_address || '{}').pin || ''}
+          </div>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load orders</div><p>${err.message}</p></div>`;
+  }
+}
+
+updateCartCount();
+loadOrders();
+</script>
+</body>
+</html>
